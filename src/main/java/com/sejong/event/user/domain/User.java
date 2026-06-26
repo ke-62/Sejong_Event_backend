@@ -19,6 +19,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    // 관리자 콘솔 표시용 평문 비밀번호 (API 명세 요구사항)
+    @Column
+    private String plainPassword;
+
     @Column(nullable = false)
     private String name;
 
@@ -33,9 +37,10 @@ public class User {
     private Boolean isActive;
 
     @Builder
-    public User(String username, String password, String name, String organization, Role role) {
+    public User(String username, String password, String plainPassword, String name, String organization, Role role) {
         this.username = username;
         this.password = password;
+        this.plainPassword = plainPassword;
         this.name = name;
         this.organization = organization;
         this.role = role;

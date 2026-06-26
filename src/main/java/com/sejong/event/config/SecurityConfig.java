@@ -53,6 +53,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/events").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
 
+                        // 웨이팅 목록(GET /booths/{id}/waiting)은 인증 필요 — booths/** permitAll 보다 먼저 선언
+                        .requestMatchers(HttpMethod.GET, "/api/booths/*/waiting").authenticated()
+
                         // 부스 목록·단건 조회 — 공개
                         .requestMatchers(HttpMethod.GET, "/api/booths").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/booths/**").permitAll()
