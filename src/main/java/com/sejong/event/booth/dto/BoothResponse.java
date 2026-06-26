@@ -1,7 +1,6 @@
 package com.sejong.event.booth.dto;
 
 import com.sejong.event.booth.domain.Booth;
-import com.sejong.event.booth.domain.CongestionStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,28 +9,51 @@ import lombok.Getter;
 public class BoothResponse {
 
     private Long id;
-    private Long eventId;
     private String name;
-    private String description;
+    private String category;
     private String location;
-    private String menu;
-    private Integer waitingCount;
-    private CongestionStatus congestionStatus;
+    private String emoji;
+    private String gradient;
+    private Integer waiting;
+    private String organization;
+    private String description;
+    private String status;
     private Boolean isOpen;
-    private String operatorName;
+
+    // 상세 조회용 추가 필드
+    private Double avgMinutes;
 
     public static BoothResponse from(Booth booth) {
         return BoothResponse.builder()
                 .id(booth.getId())
-                .eventId(booth.getEvent().getId())
                 .name(booth.getName())
-                .description(booth.getDescription())
+                .category(booth.getCategory())
                 .location(booth.getLocation())
-                .menu(booth.getMenu())
-                .waitingCount(booth.getWaitingCount())
-                .congestionStatus(booth.getCongestionStatus())
+                .emoji(booth.getEmoji())
+                .gradient(booth.getGradient())
+                .waiting(booth.getWaiting())
+                .organization(booth.getOrganization())
+                .description(booth.getDescription())
+                .status(booth.getStatus().name().toLowerCase())
                 .isOpen(booth.getIsOpen())
-                .operatorName(booth.getOperator() != null ? booth.getOperator().getName() : null)
+                .build();
+    }
+
+    public static BoothResponse withAvgMinutes(Booth booth, double avgMinutes) {
+        BoothResponse response = from(booth);
+        return BoothResponse.builder()
+                .id(response.id)
+                .name(response.name)
+                .category(response.category)
+                .location(response.location)
+                .emoji(response.emoji)
+                .gradient(response.gradient)
+                .waiting(response.waiting)
+                .organization(response.organization)
+                .description(response.description)
+                .status(response.status)
+                .isOpen(response.isOpen)
+                .avgMinutes(avgMinutes)
                 .build();
     }
 }

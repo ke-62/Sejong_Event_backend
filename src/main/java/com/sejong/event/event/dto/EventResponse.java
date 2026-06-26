@@ -1,8 +1,7 @@
 package com.sejong.event.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sejong.event.event.domain.Event;
-import com.sejong.event.event.domain.EventMode;
-import com.sejong.event.event.domain.EventStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,28 +12,27 @@ import java.time.LocalDateTime;
 public class EventResponse {
 
     private Long id;
-    private String title;
-    private String description;
-    private EventMode mode;
-    private EventStatus status;
-    private Integer maxCapacity;
-    private Integer currentCount;
+    private String name;
+    private String organization;
+    private String location;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startAt;
-    private LocalDateTime endAt;
-    private LocalDateTime createdAt;
+
+    private Integer attendanceCount;
+    private Integer targetCount;
+    private Boolean isActive;
 
     public static EventResponse from(Event event) {
         return EventResponse.builder()
                 .id(event.getId())
-                .title(event.getTitle())
-                .description(event.getDescription())
-                .mode(event.getMode())
-                .status(event.getStatus())
-                .maxCapacity(event.getMaxCapacity())
-                .currentCount(event.getCurrentCount())
+                .name(event.getName())
+                .organization(event.getOrganization())
+                .location(event.getLocation())
                 .startAt(event.getStartAt())
-                .endAt(event.getEndAt())
-                .createdAt(event.getCreatedAt())
+                .attendanceCount(event.getAttendanceCount())
+                .targetCount(event.getTargetCount())
+                .isActive(event.getIsActive())
                 .build();
     }
 }

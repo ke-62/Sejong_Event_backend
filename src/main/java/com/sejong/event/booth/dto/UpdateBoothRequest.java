@@ -6,7 +6,9 @@ import lombok.Getter;
 public class UpdateBoothRequest {
 
     private String name;
-    private String description;
+    private String category;
     private String location;
-    private String menu;
+    private String emoji;
+    private String description;
+    private String organization; // superuser 전용
 }
