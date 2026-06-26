@@ -25,7 +25,7 @@ public class AccountService {
     public List<AccountResponse> getAccounts() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getRole() == Role.ORGANIZER)
-                .map(AccountResponse::from)
+                .map(u -> AccountResponse.from(u, u.getPlainPassword()))
                 .toList();
     }
 
@@ -38,6 +38,7 @@ public class AccountService {
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .plainPassword(request.getPassword())
                 .name(request.getName())
                 .organization(request.getOrganization())
                 .role(Role.ORGANIZER)
