@@ -2,6 +2,7 @@ package com.sejong.event.config;
 
 import com.sejong.event.auth.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,27 +39,38 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 인증 무관 공개 엔드포인트
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // 공개 — Swagger, WebSocket
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/ws/**").permitAll()
-                        // 행사 모드 — 모두 공개 (managerToken 검증은 서비스 레이어에서)
-                        .requestMatchers(HttpMethod.POST, "/api/events").permitAll()
+
+                        // 인증 API
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // 축제 상태 조회 — 공개
+                        .requestMatchers(HttpMethod.GET, "/api/festival/status").permitAll()
+
+                        // 행사 목록·단건 조회 — 공개 (서비스에서 역할에 따라 필터링)
+                        .requestMatchers(HttpMethod.GET, "/api/events").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/events/*/close").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/events/*/tickets").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/events/*/tickets/scan").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/events/*/tickets/draw").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/events/*/tickets").permitAll()
-                        // 축제 모드 조회 · 부스 신청 — 공개
-                        .requestMatchers(HttpMethod.GET, "/api/festivals/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/festivals/*/applications").permitAll()
-                        // 참여자 본인 번호표 조회 — 공개
-                        .requestMatchers(HttpMethod.GET, "/api/events/*/tickets/my").permitAll()
+
+                        // 부스 목록·단건 조회 — 공개
+                        .requestMatchers(HttpMethod.GET, "/api/booths").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/booths/**").permitAll()
-                        // 관리자 전용
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        // 나머지(부스 관리 등)는 인증 필요
+
+                        // 웨이팅 등록·상태 조회 — 공개
+                        .requestMatchers(HttpMethod.POST, "/api/booths/*/waiting").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/booths/*/waiting/*").permitAll()
+
+                        // QR 스캔 입장 — 공개
+                        .requestMatchers(HttpMethod.POST, "/api/events/*/attendance/scan").permitAll()
+
+                        // superuser 전용
+                        .requestMatchers("/api/accounts/**").hasRole("SUPERUSER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/festival/status").hasRole("SUPERUSER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/booths/*/approve").hasRole("SUPERUSER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/booths/*/reject").hasRole("SUPERUSER")
+
+                        // 나머지는 인증 필요 (organizer 이상)
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -75,16 +87,20 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    @Value("${cors.allowed-origins:http://localhost:5173}")
+    private String[] allowedOrigins;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(List.of(allowedOrigins));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/ws/**", configuration);
         return source;
     }
 }

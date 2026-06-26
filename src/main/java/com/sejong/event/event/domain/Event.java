@@ -19,67 +19,54 @@ public class Event {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
+    private String name;
+
+    @Column(nullable = false)
+    private String organization;
+
+    private String location;
+
+    private LocalDateTime startAt;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EventMode mode;
+    private Integer targetCount;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EventStatus status;
+    private Integer attendanceCount;
 
-    private Integer maxCapacity; // 정족수 (행사 모드)
-
-    private Integer currentCount; // 현재 참여자 수
-
-    /**
-     * 행사 모드 전용 관리 토큰 (UUID).
-     * 로그인 없이 방을 만든 사람만 관리할 수 있도록 발급.
-     * 프론트에서 localStorage에 보관하여 추첨·종료 시 헤더로 전달.
-     */
-    @Column(unique = true)
-    private String managerToken;
-
-    private LocalDateTime startAt;
-
-    private LocalDateTime endAt;
+    @Column(nullable = false)
+    private Boolean isActive;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public Event(String title, String description, EventMode mode,
-                 Integer maxCapacity, String managerToken,
-                 LocalDateTime startAt, LocalDateTime endAt) {
-        this.title = title;
-        this.description = description;
-        this.mode = mode;
-        this.status = EventStatus.SCHEDULED;
-        this.maxCapacity = maxCapacity;
-        this.currentCount = 0;
-        this.managerToken = managerToken;
+    public Event(String name, String organization, String location, LocalDateTime startAt,
+                 String description, Integer targetCount) {
+        this.name = name;
+        this.organization = organization;
+        this.location = location;
         this.startAt = startAt;
-        this.endAt = endAt;
+        this.description = description;
+        this.targetCount = targetCount;
+        this.attendanceCount = 0;
+        this.isActive = true;
     }
 
-    public void activate() {
-        this.status = EventStatus.ACTIVE;
+    public void update(String name, String organization, String location,
+                       LocalDateTime startAt, Integer targetCount) {
+        if (name != null) this.name = name;
+        if (organization != null) this.organization = organization;
+        if (location != null) this.location = location;
+        if (startAt != null) this.startAt = startAt;
+        if (targetCount != null) this.targetCount = targetCount;
     }
 
-    public void close() {
-        this.status = EventStatus.CLOSED;
-    }
-
-    public void incrementCount() {
-        this.currentCount++;
-    }
-
-    public boolean isManagerToken(String token) {
-        return this.managerToken != null && this.managerToken.equals(token);
+    public void incrementAttendance() {
+        this.attendanceCount++;
     }
 }

@@ -22,18 +22,16 @@ public class JwtProvider {
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
 
-    @Value("${jwt.refresh-token-expiration}")
-    private long refreshTokenExpiration;
-
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     /** 사용자 Access Token 발급 */
-    public String generateAccessToken(Long userId, String studentId, String role) {
+    public String generateAccessToken(Long userId, String username, String organization, String role) {
         return Jwts.builder()
                 .subject(String.valueOf(userId))
-                .claim("studentId", studentId)
+                .claim("username", username)
+                .claim("organization", organization)
                 .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
@@ -41,29 +39,17 @@ public class JwtProvider {
                 .compact();
     }
 
-    /** 사용자 Refresh Token 발급 */
-    public String generateRefreshToken(Long userId) {
-        return Jwts.builder()
-                .subject(String.valueOf(userId))
-                .claim("type", "REFRESH")
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
-                .signWith(getSigningKey())
-                .compact();
-    }
-
     /**
-     * QR 번호표 토큰 발급 (만료 없음 - 행사 종료까지 유효)
-     * 위변조 방지를 위해 서버 서명 사용
+     * 운영진 QR 표출용 토큰 발급 (60초 만료).
+     * 학생이 이 토큰값을 스캔해 POST /events/{id}/attendance/scan 으로 전달한다.
      */
-    public String generateQrToken(Long ticketId, Long eventId, String studentId, String ticketNumber) {
+    public String generateOrganizerQrToken(Long eventId) {
         return Jwts.builder()
-                .subject(String.valueOf(ticketId))
+                .subject(String.valueOf(eventId))
+                .claim("type", "ORGANIZER_QR")
                 .claim("eventId", eventId)
-                .claim("studentId", studentId)
-                .claim("ticketNumber", ticketNumber)
-                .claim("type", "QR")
                 .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 60_000))
                 .signWith(getSigningKey())
                 .compact();
     }

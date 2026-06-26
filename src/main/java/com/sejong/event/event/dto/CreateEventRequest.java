@@ -1,5 +1,6 @@
 package com.sejong.event.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,15 +11,18 @@ import java.time.LocalDateTime;
 @Getter
 public class CreateEventRequest {
 
-    @NotBlank(message = "행사 제목은 필수입니다.")
-    private String title;
+    @NotBlank(message = "행사명은 필수입니다.")
+    private String name;
 
-    private String description;
+    @NotBlank(message = "장소는 필수입니다.")
+    private String location;
 
-    @Min(value = 1, message = "정족수는 1 이상이어야 합니다.")
-    private Integer maxCapacity; // 행사 모드 전용 정족수 (축제 모드는 null 허용)
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startAt;
 
-    private LocalDateTime endAt;
+    @NotNull(message = "목표 인원은 필수입니다.")
+    @Min(value = 1, message = "목표 인원은 1 이상이어야 합니다.")
+    private Integer targetCount;
+
+    private String description;
 }
