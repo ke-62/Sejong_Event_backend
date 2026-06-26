@@ -6,3 +6,13 @@ build
 
 # Ignore Kotlin plugin data
 .kotlin
+
+# 로컬 환경 설정 (DB 비밀번호 등 민감 정보 포함)
+src/main/resources/application-local.yml
+
+# IntelliJ
+.idea/
+*.iml
+
+# OS
+.DS_Store
