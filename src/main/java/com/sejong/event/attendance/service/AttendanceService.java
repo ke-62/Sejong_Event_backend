@@ -114,7 +114,7 @@ public class AttendanceService {
                 .event(event)
                 .studentId(request.getStudentId())
                 .name(request.getName())
-                .department(null)
+                .department(request.getDepartment())
                 .ticketNumber(ticketNumber)
                 .gate("수동")
                 .status(AttendanceStatus.SUCCESS)

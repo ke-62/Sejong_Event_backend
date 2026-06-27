@@ -31,6 +31,14 @@ public class WaitingService {
                 .toList();
     }
 
+    /** GET /booths/{boothId}/waiting/queue — 대기열 공개 조회 (이름·순번·인원만 반환) */
+    public List<WaitingQueueItem> getWaitingQueue(Long boothId) {
+        return waitingRepository.findByBoothIdAndStatusOrderByOrderAsc(boothId, WaitingStatus.WAITING)
+                .stream()
+                .map(WaitingQueueItem::from)
+                .toList();
+    }
+
     /** POST /booths/{boothId}/waiting — 웨이팅 등록 (인증 불필요) */
     @Transactional
     public WaitingRegisterResponse register(Long boothId, WaitingRegisterRequest request) {

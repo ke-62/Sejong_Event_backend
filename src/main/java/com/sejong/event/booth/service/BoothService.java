@@ -28,8 +28,12 @@ public class BoothService {
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    /** GET /booths — 승인된 부스 목록 (인증 불필요) */
-    public List<BoothResponse> getBooths(String category) {
+    /** GET /booths — 승인된 부스 목록 (인증 불필요), status=all 이면 전체 반환 */
+    public List<BoothResponse> getBooths(String category, String status) {
+        if ("all".equalsIgnoreCase(status)) {
+            return boothRepository.findAllByOrderByStatusAscIdDesc()
+                    .stream().map(BoothResponse::from).toList();
+        }
         List<Booth> booths;
         if (category != null && !category.isBlank()) {
             booths = boothRepository.findByCategoryAndStatusOrderByWaitingDesc(
@@ -38,6 +42,13 @@ public class BoothService {
             booths = boothRepository.findByStatusOrderByWaitingDesc(BoothStatus.APPROVED);
         }
         return booths.stream().map(BoothResponse::from).toList();
+    }
+
+    /** GET /booths/mine — 내 기관 부스 전체 조회 (PENDING 포함) */
+    public List<BoothResponse> getMyBooths(Long userId) {
+        User user = findUser(userId);
+        return boothRepository.findByOrganization(user.getOrganization())
+                .stream().map(BoothResponse::from).toList();
     }
 
     /** GET /booths/{boothId} — 부스 상세 (인증 불필요) */

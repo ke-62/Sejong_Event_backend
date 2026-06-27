@@ -28,6 +28,13 @@ public class WaitingController {
         return ResponseEntity.ok(ApiResponse.ok("성공", waitingService.getWaitingList(boothId)));
     }
 
+    @Operation(summary = "웨이팅 대기열 공개 조회 — 이름·순번만 반환 (인증 불필요)")
+    @GetMapping("/queue")
+    public ResponseEntity<ApiResponse<List<WaitingQueueItem>>> getQueue(
+            @PathVariable Long boothId) {
+        return ResponseEntity.ok(ApiResponse.ok("성공", waitingService.getWaitingQueue(boothId)));
+    }
+
     @Operation(summary = "웨이팅 등록 (인증 불필요)")
     @PostMapping
     public ResponseEntity<ApiResponse<WaitingRegisterResponse>> register(

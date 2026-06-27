@@ -6,6 +6,7 @@ import com.sejong.event.event.domain.Event;
 import com.sejong.event.event.dto.CreateEventRequest;
 import com.sejong.event.event.dto.EventResponse;
 import com.sejong.event.event.dto.UpdateEventRequest;
+import com.sejong.event.attendance.repository.AttendanceLogRepository;
 import com.sejong.event.event.repository.EventRepository;
 import com.sejong.event.user.domain.Role;
 import com.sejong.event.user.domain.User;
@@ -23,6 +24,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final AttendanceLogRepository attendanceLogRepository;
 
     /** GET /events — 인증 선택. 미인증: 전체 활성, organizer: 본인 org, superuser: 전체 */
     public List<EventResponse> getEvents(Long userId) {
@@ -81,6 +83,7 @@ public class EventService {
         User user = findUser(userId);
         Event event = findEvent(eventId);
         checkEventAccess(user, event);
+        attendanceLogRepository.deleteByEventId(eventId);
         eventRepository.delete(event);
     }
 
