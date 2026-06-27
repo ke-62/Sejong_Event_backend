@@ -23,11 +23,19 @@ public class BoothController {
 
     private final BoothService boothService;
 
-    @Operation(summary = "부스 목록 조회 (인증 불필요)")
+    @Operation(summary = "부스 목록 조회 (인증 불필요), status=all 이면 전체 반환")
     @GetMapping
     public ResponseEntity<ApiResponse<List<BoothResponse>>> getBooths(
-            @RequestParam(required = false) String category) {
-        return ResponseEntity.ok(ApiResponse.ok("성공", boothService.getBooths(category)));
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String status) {
+        return ResponseEntity.ok(ApiResponse.ok("성공", boothService.getBooths(category, status)));
+    }
+
+    @Operation(summary = "내 기관 부스 전체 조회 — PENDING 포함 (organizer 이상)")
+    @GetMapping("/mine")
+    public ResponseEntity<ApiResponse<List<BoothResponse>>> getMyBooths(
+            @AuthenticationPrincipal Long userId) {
+        return ResponseEntity.ok(ApiResponse.ok("성공", boothService.getMyBooths(userId)));
     }
 
     @Operation(summary = "부스 상세 조회 (인증 불필요)")

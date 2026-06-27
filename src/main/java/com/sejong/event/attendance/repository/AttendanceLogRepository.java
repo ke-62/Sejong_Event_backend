@@ -20,4 +20,6 @@ public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Lo
     int countByEventIdAndStatus(Long eventId, AttendanceStatus status);
 
     int countByEventId(Long eventId);
+
+    void deleteByEventId(Long eventId);
 }
