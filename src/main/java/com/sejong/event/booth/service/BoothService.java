@@ -9,6 +9,7 @@ import com.sejong.event.common.exception.ErrorCode;
 import com.sejong.event.user.domain.Role;
 import com.sejong.event.user.domain.User;
 import com.sejong.event.user.repository.UserRepository;
+import com.sejong.event.waiting.repository.WaitingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class BoothService {
     private final BoothRepository boothRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final WaitingRepository waitingRepository;
 
     /** GET /booths — 승인된 부스 목록 (인증 불필요), status=all 이면 전체 반환 */
     public List<BoothResponse> getBooths(String category, String status) {
@@ -97,6 +99,7 @@ public class BoothService {
         User user = findUser(userId);
         Booth booth = findBooth(boothId);
         checkBoothAccess(user, booth);
+        waitingRepository.deleteByBoothId(boothId);
         boothRepository.delete(booth);
     }
 

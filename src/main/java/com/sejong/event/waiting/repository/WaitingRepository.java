@@ -22,4 +22,6 @@ public interface WaitingRepository extends JpaRepository<WaitingEntry, Long> {
     Optional<WaitingEntry> findFirstByBoothIdAndStatusOrderByOrderDesc(Long boothId, WaitingStatus status);
 
     int countByBoothIdAndStatusAndOrderLessThan(Long boothId, WaitingStatus status, Integer order);
+
+    void deleteByBoothId(Long boothId);
 }
