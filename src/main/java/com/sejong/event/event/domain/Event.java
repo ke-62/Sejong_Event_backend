@@ -8,7 +8,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "events")
+@Table(name = "events",
+        indexes = {
+                // 비로그인 목록: findByIsActiveTrue
+                @Index(name = "idx_event_active", columnList = "is_active"),
+                // 운영진 목록: findByOrganization
+                @Index(name = "idx_event_organization", columnList = "organization")
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)

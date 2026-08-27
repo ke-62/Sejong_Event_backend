@@ -2,6 +2,7 @@ package com.sejong.event.event.service;
 
 import com.sejong.event.common.exception.CustomException;
 import com.sejong.event.common.exception.ErrorCode;
+import com.sejong.event.config.CacheConfig;
 import com.sejong.event.event.domain.Event;
 import com.sejong.event.event.dto.CreateEventRequest;
 import com.sejong.event.event.dto.EventResponse;
@@ -12,6 +13,9 @@ import com.sejong.event.user.domain.Role;
 import com.sejong.event.user.domain.User;
 import com.sejong.event.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ public class EventService {
     private final AttendanceLogRepository attendanceLogRepository;
 
     /** GET /events — 인증 선택. 미인증: 전체 활성, organizer: 본인 org, superuser: 전체 */
+    @Cacheable(value = CacheConfig.EVENT_LIST, key = "#userId == null ? 'anonymous' : #userId")
     public List<EventResponse> getEvents(Long userId) {
         if (userId == null) {
             return eventRepository.findByIsActiveTrue().stream()
@@ -44,11 +49,13 @@ public class EventService {
                 .toList();
     }
 
+    @Cacheable(value = CacheConfig.EVENTS, key = "#eventId")
     public EventResponse getEvent(Long eventId) {
         return EventResponse.from(findEvent(eventId));
     }
 
     @Transactional
+    @CacheEvict(value = CacheConfig.EVENT_LIST, allEntries = true)
     public EventResponse createEvent(Long userId, CreateEventRequest request) {
         User user = findUser(userId);
 
@@ -65,6 +72,10 @@ public class EventService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheConfig.EVENTS, key = "#eventId"),
+            @CacheEvict(value = CacheConfig.EVENT_LIST, allEntries = true)
+    })
     public EventResponse updateEvent(Long userId, Long eventId, UpdateEventRequest request) {
         User user = findUser(userId);
         Event event = findEvent(eventId);
@@ -79,6 +90,10 @@ public class EventService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = CacheConfig.EVENTS, key = "#eventId"),
+            @CacheEvict(value = CacheConfig.EVENT_LIST, allEntries = true)
+    })
     public void deleteEvent(Long userId, Long eventId) {
         User user = findUser(userId);
         Event event = findEvent(eventId);
