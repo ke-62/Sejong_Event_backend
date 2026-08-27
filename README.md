@@ -180,6 +180,57 @@ ifconfig | grep "inet " | grep -v 127.0.0.1
 VITE_API_URL=http://192.168.x.x:8080/api
 ```
 
+## 배포
+
+### 프로필
+
+| 프로필 | 용도 | 특징 |
+|--------|------|------|
+| `local` (기본) | 로컬 개발 | `ddl-auto: update`, `show-sql: true`, 시크릿 기본값 있음 |
+| `prod` | 운영 배포 | `ddl-auto: validate`, `show-sql: false`, 시크릿·DB 는 환경변수 필수(기본값 없음), Swagger 기본 비활성 |
+
+`SPRING_PROFILES_ACTIVE` 로 선택한다. (Docker 이미지는 `prod` 가 기본)
+
+### 환경변수 (prod)
+
+| 변수 | 필수 | 설명 |
+|------|------|------|
+| `DB_URL` | ✅ | `jdbc:mysql://호스트:3306/sejong_event?...` |
+| `DB_USERNAME` | ✅ | DB 계정 |
+| `DB_PASSWORD` | ✅ | DB 비밀번호 |
+| `JWT_SECRET` | ✅ | HMAC 서명 키 (256bit 이상) |
+| `CORS_ALLOWED_ORIGINS` | ✅ | 허용 오리진 (쉼표 구분) |
+| `SWAGGER_ENABLED` | | `true` 면 `/swagger-ui.html` 노출 (기본 false) |
+| `SERVER_PORT` | | 기본 8080 |
+| `SPRING_JPA_HIBERNATE_DDL_AUTO` | | 신규 DB 초기 구축 시 일시적으로 `update` |
+
+### Docker
+
+```bash
+# 단독 실행 (외부 MySQL 필요)
+docker build -t sejong-event-backend .
+docker run -p 8080:8080 \
+  -e DB_URL=jdbc:mysql://<host>:3306/sejong_event \
+  -e DB_USERNAME=... -e DB_PASSWORD=... -e JWT_SECRET=... \
+  -e CORS_ALLOWED_ORIGINS=https://<프론트도메인> \
+  sejong-event-backend
+
+# 앱 + MySQL 한 번에 (로컬/스테이징)
+docker compose up --build
+```
+
+### CD 파이프라인
+
+`.github/workflows/deploy.yml` — `workflow_dispatch` (수동 실행) 시 bootJar 빌드 후
+Docker 이미지를 `ghcr.io/ke-62/sejong_event_backend` 로 푸시한다.
+실제 호스팅(EC2 / Railway 등) 배포 시점은 프론트엔드 배포와 맞추어 진행한다.
+
+### 초기 데이터
+
+신규 DB 는 최초 1회 `SPRING_JPA_HIBERNATE_DDL_AUTO=update` 로 테이블을 만든 뒤,
+아래 "로컬 실행 4. 초기 데이터 INSERT" 의 `admin` 계정·축제 설정을 넣고,
+이후에는 `validate` 로 되돌린다.
+
 ## 브랜치 전략
 
 ```

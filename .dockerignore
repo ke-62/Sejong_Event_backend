@@ -1,0 +1,10 @@
+.git/
+.github/
+.gradle/
+build/
+bin/
+.idea/
+*.iml
+.DS_Store
+README.md
+src/main/resources/application-local.yml
