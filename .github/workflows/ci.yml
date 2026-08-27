@@ -33,6 +33,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Check code style
+        run: ./gradlew spotlessCheck
+
       - name: Run tests and verify coverage
         run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
         env:
