@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
 
 jobs:
   build-and-test:
@@ -33,8 +33,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Run tests
-        run: ./gradlew test
+      - name: Run tests and verify coverage
+        run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci-test-secret-key-must-be-at-least-256-bits-long-for-hmac' }}
 
@@ -45,6 +45,13 @@ jobs:
           name: JUnit Test Results
           path: build/test-results/test/*.xml
           reporter: java-junit
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/test/html
 
       - name: Build (skip tests)
         run: ./gradlew build -x test
