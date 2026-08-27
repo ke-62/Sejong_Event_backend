@@ -44,7 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (CustomException e) {
+                // 토큰이 담겨 있는데 만료·무효 → 조용히 넘기지 않고 401 로 명확히 알린다.
+                // (ExceptionTranslationFilter 가 잡아 RestAuthenticationEntryPoint 로 전달)
                 log.debug("JWT 인증 실패: {}", e.getMessage());
+                SecurityContextHolder.clearContext();
+                throw new InvalidTokenException(e.getMessage());
             }
         }
 
