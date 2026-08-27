@@ -1,0 +1,34 @@
+# 운영(prod) 프로필 — SPRING_PROFILES_ACTIVE=prod 일 때만 적용.
+# DB 접속·JWT 서명 키·CORS 는 환경변수로만 주입한다(기본값 없음 → 누락 시 기동 실패).
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      # 운영 스키마는 마이그레이션으로 관리, 앱은 검증만 수행
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+jwt:
+  secret: ${JWT_SECRET}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
+
+# 운영에서는 API 문서를 기본 비활성 (필요 시 SWAGGER_ENABLED=true)
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}
+
+logging:
+  level:
+    root: INFO
+    com.sejong.event: INFO
+    org.hibernate.SQL: WARN

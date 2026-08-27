@@ -65,6 +65,11 @@ def jacocoExcludes = [
     '**/*Application*',
 ]
 
+// Spring Boot 실행 가능 jar(bootJar)만 산출 — plain jar 비활성 (Docker COPY 모호성 제거)
+tasks.named('jar') {
+    enabled = false
+}
+
 tasks.named('test') {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
