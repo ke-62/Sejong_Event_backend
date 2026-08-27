@@ -46,8 +46,10 @@ public class SecurityConfig {
                         .authenticationEntryPoint(restAuthenticationEntryPoint)
                         .accessDeniedHandler(restAccessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
-                        // 공개 — Swagger, WebSocket
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
+                        // 공개 — Swagger / OpenAPI 문서 (JSON·YAML 단건 경로 포함)
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api-docs", "/api-docs.yaml", "/api-docs/**").permitAll()
+                        .requestMatchers("/v3/api-docs", "/v3/api-docs.yaml", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
 
                         // 인증 API

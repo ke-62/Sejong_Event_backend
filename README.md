@@ -166,6 +166,9 @@ INSERT INTO festival_settings (id, is_active) VALUES (1, true);
 
 `http://localhost:8080/swagger-ui.html`
 
+OpenAPI 명세 스냅샷: [`docs/openapi.yaml`](docs/openapi.yaml)
+(재생성: `./gradlew test -Dopenapi.update=true` — `OpenApiDocsTest` 가 실시간 스펙과 경로 일치를 검증)
+
 ## 팀원 로컬 연동 (같은 와이파이 환경)
 
 백엔드 담당자 컴퓨터 IP 확인:

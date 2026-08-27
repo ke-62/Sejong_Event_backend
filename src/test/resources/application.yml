@@ -19,3 +19,10 @@ jwt:
   secret: test-secret-key-for-testing-purposes-must-be-at-least-256-bits-long
   access-token-expiration: 1800000
   refresh-token-expiration: 604800000
+
+# 운영과 동일한 문서 경로 (OpenApiDocsTest 가 /api-docs.yaml 을 조회)
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

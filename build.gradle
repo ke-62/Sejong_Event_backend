@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'com.diffplug.spotless' version '6.25.0'
     id 'org.springframework.boot' version '3.3.6'
     id 'io.spring.dependency-management' version '1.1.6'
 }
@@ -65,6 +66,17 @@ def jacocoExcludes = [
     '**/*Application*',
 ]
 
+// 코드 스타일 — 재포매팅 없이 실질적 정리만 (미사용 import, 후행 공백, 파일 끝 개행)
+spotless {
+    java {
+        target 'src/**/*.java'
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+check.dependsOn spotlessCheck
+
 // Spring Boot 실행 가능 jar(bootJar)만 산출 — plain jar 비활성 (Docker COPY 모호성 제거)
 tasks.named('jar') {
     enabled = false
@@ -72,6 +84,8 @@ tasks.named('jar') {
 
 tasks.named('test') {
     useJUnitPlatform()
+    // OpenAPI 스냅샷 재생성 플래그를 테스트 JVM 으로 전달 (./gradlew test -Dopenapi.update=true)
+    systemProperty 'openapi.update', System.getProperty('openapi.update', 'false')
     finalizedBy jacocoTestReport
 }
 
