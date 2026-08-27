@@ -4,6 +4,9 @@
 # Ignore Gradle build output directory
 build
 
+# Eclipse / VS Code Java 확장이 만드는 컴파일 출력 디렉터리
+bin/
+
 # Ignore Kotlin plugin data
 .kotlin
 
