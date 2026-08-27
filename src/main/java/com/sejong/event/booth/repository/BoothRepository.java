@@ -14,7 +14,5 @@ public interface BoothRepository extends JpaRepository<Booth, Long> {
 
     List<Booth> findByOrganization(String organization);
 
-    int countByStatus(BoothStatus status);
-
     List<Booth> findAllByOrderByStatusAscIdDesc();
 }

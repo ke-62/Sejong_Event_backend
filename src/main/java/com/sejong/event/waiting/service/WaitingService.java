@@ -56,11 +56,11 @@ public class WaitingService {
 
         entry = waitingRepository.save(entry);
 
-        int waitingAhead = waitingRepository.countByBoothIdAndStatus(boothId, WaitingStatus.WAITING) - 1;
+        // 대기 인원 집계는 한 번만 조회해 재사용한다 (본인 포함 총 대기 수)
+        int totalWaiting = waitingRepository.countByBoothIdAndStatus(boothId, WaitingStatus.WAITING);
+        int waitingAhead = totalWaiting - 1;
         double estimatedMinutes = waitingAhead * AVG_MINUTES_PER_PARTY;
 
-        // 부스 waiting 카운트 업데이트
-        int totalWaiting = waitingRepository.countByBoothIdAndStatus(boothId, WaitingStatus.WAITING);
         booth.setWaiting(totalWaiting);
         boothService.broadcastBoothWaiting(boothId, booth);
 

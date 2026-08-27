@@ -63,8 +63,8 @@ public class BoothService {
     @Transactional
     public BoothResponse createBooth(Long userId, CreateBoothRequest request) {
         User user = findUser(userId);
-        int count = boothRepository.countByStatus(BoothStatus.APPROVED)
-                + boothRepository.countByStatus(BoothStatus.PENDING);
+        // 그라디언트 프리셋 회전용 인덱스 — 전체 부스 수 1회 조회로 충분 (기존 status별 2회 조회 대체)
+        int count = (int) boothRepository.count();
 
         Booth booth = Booth.builder()
                 .name(request.getName())

@@ -49,7 +49,7 @@ class BoothServiceTest {
     void createBoothIsPending() {
         User user = TestFixtures.organizer("중앙동아리 A");
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
-        given(boothRepository.countByStatus(any())).willReturn(0);
+        given(boothRepository.count()).willReturn(0L);
         given(boothRepository.save(any(Booth.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         BoothResponse response = boothService.createBooth(1L, TestRequests.createBooth("감성주점", "주점"));

@@ -10,7 +10,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "booths")
+@Table(name = "booths",
+        indexes = {
+                // 공개 목록: findByStatusOrderByWaitingDesc
+                @Index(name = "idx_booth_status_waiting", columnList = "status, waiting"),
+                // 카테고리 필터: findByCategoryAndStatusOrderByWaitingDesc
+                @Index(name = "idx_booth_category_status", columnList = "category, status"),
+                // 내 기관 부스: findByOrganization
+                @Index(name = "idx_booth_organization", columnList = "organization")
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)

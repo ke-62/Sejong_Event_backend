@@ -9,7 +9,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "waiting_entries")
+@Table(name = "waiting_entries",
+        indexes = {
+                // 대기열 조회·집계: findByBoothIdAndStatusOrderByOrderAsc / countByBoothIdAndStatus
+                @Index(name = "idx_waiting_booth_status", columnList = "booth_id, status"),
+                // 부스별 순번 조회: findByBoothIdOrderByOrderAsc
+                @Index(name = "idx_waiting_booth_order", columnList = "booth_id, wait_order")
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)

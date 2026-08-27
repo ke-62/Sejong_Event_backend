@@ -10,7 +10,13 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "attendance_logs",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"event_id", "student_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"event_id", "student_id"}),
+        indexes = {
+                // 추첨·정족수 집계: findByEventIdAndStatus / countByEventIdAndStatus
+                @Index(name = "idx_attendance_event_status", columnList = "event_id, status"),
+                // 입장 로그 최신순 목록: findByEventIdOrderByCreatedAtDesc
+                @Index(name = "idx_attendance_event_created", columnList = "event_id, created_at")
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
