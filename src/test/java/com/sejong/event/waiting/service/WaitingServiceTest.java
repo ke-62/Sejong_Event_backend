@@ -9,6 +9,7 @@ import com.sejong.event.support.TestRequests;
 import com.sejong.event.waiting.domain.WaitingEntry;
 import com.sejong.event.waiting.domain.WaitingStatus;
 import com.sejong.event.waiting.dto.NextWaitingResponse;
+import com.sejong.event.waiting.dto.WaitingQueueItem;
 import com.sejong.event.waiting.dto.WaitingRegisterResponse;
 import com.sejong.event.waiting.dto.WaitingStatusResponse;
 import com.sejong.event.waiting.repository.WaitingRepository;
@@ -136,7 +137,7 @@ class WaitingServiceTest {
     }
 
     @Test
-    @DisplayName("대기열 공개 조회는 순번·이름·인원만 반환한다")
+    @DisplayName("대기열 공개 조회는 이름 가운데를 마스킹하고 전화번호 뒷자리 4자리만 반환한다")
     void getWaitingQueue() {
         Booth booth = TestFixtures.booth("동아리 A");
         given(waitingRepository.findByBoothIdAndStatusOrderByOrderAsc(3L, WaitingStatus.WAITING))
@@ -144,6 +145,10 @@ class WaitingServiceTest {
                         TestFixtures.waitingEntry(booth, 1L, 1, WaitingStatus.WAITING),
                         TestFixtures.waitingEntry(booth, 2L, 2, WaitingStatus.WAITING)));
 
-        assertThat(waitingService.getWaitingQueue(3L)).hasSize(2);
+        List<WaitingQueueItem> queue = waitingService.getWaitingQueue(3L);
+
+        assertThat(queue).hasSize(2);
+        assertThat(queue.get(0).getName()).isEqualTo("대x자"); // "대기자" 가운데 마스킹
+        assertThat(queue.get(0).getPhoneTail()).isEqualTo("0000"); // "01000000000" 뒷자리 4자리
     }
 }
