@@ -72,6 +72,20 @@ public final class TestRequests {
         return request;
     }
 
+    public static CreateBoothRequest createBoothAt(String name, double latitude, double longitude) {
+        CreateBoothRequest request = createBooth(name, "주점");
+        ReflectionTestUtils.setField(request, "latitude", latitude);
+        ReflectionTestUtils.setField(request, "longitude", longitude);
+        return request;
+    }
+
+    public static UpdateBoothRequest updateBoothCoordinates(double latitude, double longitude) {
+        UpdateBoothRequest request = new UpdateBoothRequest();
+        ReflectionTestUtils.setField(request, "latitude", latitude);
+        ReflectionTestUtils.setField(request, "longitude", longitude);
+        return request;
+    }
+
     public static UpdateBoothStatusRequest boothStatus(boolean isOpen) {
         UpdateBoothStatusRequest request = new UpdateBoothStatusRequest();
         ReflectionTestUtils.setField(request, "isOpen", isOpen);

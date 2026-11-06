@@ -59,7 +59,7 @@ public class BoothController {
     public ResponseEntity<ApiResponse<BoothResponse>> updateBooth(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long boothId,
-            @RequestBody UpdateBoothRequest request) {
+            @Valid @RequestBody UpdateBoothRequest request) {
         return ResponseEntity.ok(ApiResponse.ok("성공", boothService.updateBooth(userId, boothId, request)));
     }
 

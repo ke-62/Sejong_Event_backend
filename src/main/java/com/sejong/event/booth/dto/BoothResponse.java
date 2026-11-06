@@ -12,6 +12,8 @@ public class BoothResponse {
     private String name;
     private String category;
     private String location;
+    private Double latitude;
+    private Double longitude;
     private String emoji;
     private String gradient;
     private Integer waiting;
@@ -29,6 +31,8 @@ public class BoothResponse {
                 .name(booth.getName())
                 .category(booth.getCategory())
                 .location(booth.getLocation())
+                .latitude(booth.getLatitude())
+                .longitude(booth.getLongitude())
                 .emoji(booth.getEmoji())
                 .gradient(booth.getGradient())
                 .waiting(booth.getWaiting())
@@ -46,6 +50,8 @@ public class BoothResponse {
                 .name(response.name)
                 .category(response.category)
                 .location(response.location)
+                .latitude(response.latitude)
+                .longitude(response.longitude)
                 .emoji(response.emoji)
                 .gradient(response.gradient)
                 .waiting(response.waiting)
