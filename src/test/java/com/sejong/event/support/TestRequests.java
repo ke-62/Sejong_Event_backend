@@ -63,6 +63,8 @@ public final class TestRequests {
         ReflectionTestUtils.setField(request, "name", name);
         ReflectionTestUtils.setField(request, "category", category);
         ReflectionTestUtils.setField(request, "location", "잔디마당");
+        ReflectionTestUtils.setField(request, "latitude", 37.5507);
+        ReflectionTestUtils.setField(request, "longitude", 127.0743);
         return request;
     }
 
