@@ -108,6 +108,37 @@ class BoothServiceTest {
     }
 
     @Test
+    @DisplayName("부스 신청 시 지도 좌표를 함께 저장한다")
+    void createBoothWithCoordinates() {
+        User user = TestFixtures.organizer("중앙동아리 A");
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(boothRepository.count()).willReturn(0L);
+        given(boothRepository.save(any(Booth.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+        BoothResponse response = boothService.createBooth(1L,
+                TestRequests.createBoothAt("감성주점", 37.5503, 127.0742));
+
+        assertThat(response.getLatitude()).isEqualTo(37.5503);
+        assertThat(response.getLongitude()).isEqualTo(127.0742);
+    }
+
+    @Test
+    @DisplayName("부스 수정 시 좌표를 보내면 갱신하고, 보내지 않으면 기존 좌표를 유지한다")
+    void updateBoothCoordinates() {
+        User user = TestFixtures.organizer("동아리 A");
+        Booth booth = TestFixtures.booth("동아리 A");
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(boothRepository.findById(3L)).willReturn(Optional.of(booth));
+
+        boothService.updateBooth(1L, 3L, TestRequests.updateBoothCoordinates(37.5501, 127.0739));
+        boothService.updateBooth(1L, 3L, TestRequests.updateBooth("새 이름"));
+
+        assertThat(booth.getLatitude()).isEqualTo(37.5501);
+        assertThat(booth.getLongitude()).isEqualTo(127.0739);
+        assertThat(booth.getName()).isEqualTo("새 이름");
+    }
+
+    @Test
     @DisplayName("다른 기관 부스 수정은 BOOTH_ACCESS_DENIED")
     void updateOtherOrganizationBooth() {
         User user = TestFixtures.organizer("동아리 A");

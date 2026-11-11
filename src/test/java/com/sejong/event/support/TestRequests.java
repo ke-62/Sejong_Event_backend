@@ -63,12 +63,28 @@ public final class TestRequests {
         ReflectionTestUtils.setField(request, "name", name);
         ReflectionTestUtils.setField(request, "category", category);
         ReflectionTestUtils.setField(request, "location", "잔디마당");
+        ReflectionTestUtils.setField(request, "latitude", 37.5507);
+        ReflectionTestUtils.setField(request, "longitude", 127.0743);
         return request;
     }
 
     public static UpdateBoothRequest updateBooth(String name) {
         UpdateBoothRequest request = new UpdateBoothRequest();
         ReflectionTestUtils.setField(request, "name", name);
+        return request;
+    }
+
+    public static CreateBoothRequest createBoothAt(String name, double latitude, double longitude) {
+        CreateBoothRequest request = createBooth(name, "주점");
+        ReflectionTestUtils.setField(request, "latitude", latitude);
+        ReflectionTestUtils.setField(request, "longitude", longitude);
+        return request;
+    }
+
+    public static UpdateBoothRequest updateBoothCoordinates(double latitude, double longitude) {
+        UpdateBoothRequest request = new UpdateBoothRequest();
+        ReflectionTestUtils.setField(request, "latitude", latitude);
+        ReflectionTestUtils.setField(request, "longitude", longitude);
         return request;
     }
 

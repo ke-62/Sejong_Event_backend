@@ -45,6 +45,10 @@ public class Booth {
 
     private String location;
 
+    private Double latitude;
+
+    private Double longitude;
+
     private String emoji;
 
     private String gradient;
@@ -73,11 +77,13 @@ public class Booth {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Booth(String name, String category, String location, String emoji,
-                 String organization, String description, int createdIndex) {
+    public Booth(String name, String category, String location, Double latitude, Double longitude,
+                 String emoji, String organization, String description, int createdIndex) {
         this.name = name;
         this.category = category;
         this.location = location;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.emoji = emoji;
         this.organization = organization;
         this.description = description;
@@ -107,6 +113,12 @@ public class Booth {
         if (emoji != null) this.emoji = emoji;
         if (description != null) this.description = description;
         if (organization != null) this.organization = organization;
+    }
+
+    public void updateCoordinates(Double latitude, Double longitude) {
+        if (latitude == null || longitude == null) return;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void setWaiting(int waiting) {

@@ -70,6 +70,8 @@ public class BoothService {
                 .name(request.getName())
                 .category(request.getCategory())
                 .location(request.getLocation())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
                 .emoji(request.getEmoji())
                 .organization(user.getOrganization())
                 .description(request.getDescription())
@@ -89,6 +91,7 @@ public class BoothService {
         String newOrg = (user.getRole() == Role.SUPERUSER) ? request.getOrganization() : null;
         booth.updateInfo(request.getName(), request.getCategory(), request.getLocation(),
                 request.getEmoji(), request.getDescription(), newOrg);
+        booth.updateCoordinates(request.getLatitude(), request.getLongitude());
 
         return BoothResponse.from(booth);
     }
