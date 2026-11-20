@@ -32,3 +32,10 @@ logging:
     root: INFO
     com.sejong.event: INFO
     org.hibernate.SQL: WARN
+
+# 운영에서는 health 만 노출
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

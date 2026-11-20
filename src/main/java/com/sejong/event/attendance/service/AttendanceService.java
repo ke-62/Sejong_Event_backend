@@ -7,10 +7,13 @@ import com.sejong.event.attendance.repository.AttendanceLogRepository;
 import com.sejong.event.auth.jwt.JwtProvider;
 import com.sejong.event.common.exception.CustomException;
 import com.sejong.event.common.exception.ErrorCode;
+import com.sejong.event.config.CacheConfig;
 import com.sejong.event.event.domain.Event;
 import com.sejong.event.event.service.EventService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +46,12 @@ public class AttendanceService {
     }
 
     /** POST /events/{eventId}/attendance/scan — 학생 QR 스캔 입장 (인증 불필요) */
+    // 행사 응답에 누적 입장자 수가 포함되므로 입장 처리 후 행사 캐시를 무효화한다.
+    // (누락 시 행사 선택 화면의 입장 인원이 갱신되지 않던 문제)
+    @Caching(evict = {
+            @CacheEvict(value = CacheConfig.EVENTS, key = "#eventId"),
+            @CacheEvict(value = CacheConfig.EVENT_LIST, allEntries = true)
+    })
     @Transactional
     public ScanResponse scan(Long eventId, ScanRequest request) {
         // 중복 학번 확인
@@ -101,6 +110,12 @@ public class AttendanceService {
     }
 
     /** POST /events/{eventId}/attendance/manual — 운영진 수동 번호표 발급 */
+    // 행사 응답에 누적 입장자 수가 포함되므로 입장 처리 후 행사 캐시를 무효화한다.
+    // (누락 시 행사 선택 화면의 입장 인원이 갱신되지 않던 문제)
+    @Caching(evict = {
+            @CacheEvict(value = CacheConfig.EVENTS, key = "#eventId"),
+            @CacheEvict(value = CacheConfig.EVENT_LIST, allEntries = true)
+    })
     @Transactional
     public ManualTicketResponse manualIssue(Long eventId, ManualTicketRequest request) {
         if (attendanceLogRepository.existsByEventIdAndStudentId(eventId, request.getStudentId())) {

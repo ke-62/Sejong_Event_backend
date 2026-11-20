@@ -16,6 +16,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cache:
+    # 기본 caffeine. SPRING_CACHE_TYPE=none 이면 캐시 없이 동작 (전후 성능 비교용)
+    type: ${SPRING_CACHE_TYPE:caffeine}
+    cache-names: festivalStatus,events,eventList
+    caffeine:
+      # 최대 항목 수 + 쓰기 후 만료(무효화 누락 시 최악의 경우 상한) + 적중률 통계
+      spec: maximumSize=500,expireAfterWrite=10m,recordStats
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -42,3 +49,10 @@ springdoc:
 
 server:
   port: ${SERVER_PORT:8080}
+
+# Actuator — 로컬은 health·metrics 노출 (캐시 적중률: /actuator/metrics/cache.gets)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
