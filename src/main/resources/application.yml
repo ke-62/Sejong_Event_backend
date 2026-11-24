@@ -38,7 +38,7 @@ cors:
 jwt:
   # 로컬 개발용 기본값. prod 프로필에서는 JWT_SECRET 환경변수 필수.
   secret: ${JWT_SECRET:sejong-event-platform-jwt-secret-key-must-be-at-least-256-bits-long-for-security}
-  access-token-expiration: 1800000    # 30분
+  access-token-expiration: 86400000   # 24시간
   refresh-token-expiration: 604800000  # 7일
 
 springdoc:
