@@ -1,5 +1,6 @@
 package com.sejong.event.performance;
 
+import com.sejong.event.attendance.service.AttendanceService;
 import com.sejong.event.config.CacheConfig;
 import com.sejong.event.event.service.EventService;
 import com.sejong.event.festival.service.FestivalService;
@@ -29,6 +30,8 @@ class CachingIntegrationTest {
     private FestivalService festivalService;
     @Autowired
     private EventService eventService;
+    @Autowired
+    private AttendanceService attendanceService;
     @Autowired
     private CacheManager cacheManager;
     @Autowired
@@ -93,5 +96,38 @@ class CachingIntegrationTest {
 
         eventService.getEvent(eventId);
         assertThat(cache.get(eventId)).isNotNull();
+    }
+
+    @Test
+    @DisplayName("입장 처리 후 행사 단건·목록 캐시가 무효화되어 입장자 수가 갱신된다")
+    void eventCacheEvictedOnAttendance() {
+        cacheManager.getCache(CacheConfig.EVENTS).clear();
+        cacheManager.getCache(CacheConfig.EVENT_LIST).clear();
+
+        User organizer = userRepository.save(User.builder()
+                .username("perf-organizer3")
+                .password(passwordEncoder.encode("pw"))
+                .name("운영진")
+                .organization("성능테스트학생회3")
+                .role(Role.ORGANIZER)
+                .build());
+        Long eventId = eventService.createEvent(organizer.getId(),
+                TestRequests.createEvent("행사", "장소", 10)).getId();
+
+        // 캐시 적재 (입장자 0명)
+        assertThat(eventService.getEvent(eventId).getAttendanceCount()).isZero();
+        assertThat(attendanceCountInList(organizer.getId(), eventId)).isZero();
+
+        attendanceService.manualIssue(eventId, TestRequests.manualTicket("20260001", "김세종"));
+
+        assertThat(eventService.getEvent(eventId).getAttendanceCount()).as("단건 갱신").isEqualTo(1);
+        assertThat(attendanceCountInList(organizer.getId(), eventId)).as("목록 갱신").isEqualTo(1);
+    }
+
+    private int attendanceCountInList(Long userId, Long eventId) {
+        return eventService.getEvents(userId).stream()
+                .filter(e -> e.getId().equals(eventId))
+                .findFirst().orElseThrow()
+                .getAttendanceCount();
     }
 }

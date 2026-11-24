@@ -51,6 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/api-docs", "/api-docs.yaml", "/api-docs/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs.yaml", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
+                        // 노출 범위는 management.endpoints.web.exposure 로 제한 (prod: health 만)
+                        .requestMatchers("/actuator/health", "/actuator/metrics", "/actuator/metrics/**").permitAll()
 
                         // 인증 API
                         .requestMatchers("/api/auth/**").permitAll()
