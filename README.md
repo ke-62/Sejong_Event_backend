@@ -139,28 +139,12 @@ spring:
 
 `ddl-auto: update` 설정으로 테이블이 자동 생성됩니다.
 
-### 4. 초기 데이터 INSERT
+### 4. 초기 데이터
 
-앱 실행 후 MySQL Workbench 또는 터미널에서 실행:
+`local` 프로필로 빈 DB 에서 처음 실행하면 `DataSeeder` 가 관리자·운영진 계정, 축제 설정, 예시 행사·부스를 자동으로 넣는다.
+(데이터가 이미 있으면 건너뜀)
 
-```sql
-USE sejong_event;
-
--- superuser 계정 생성 (비밀번호: admin1234)
-INSERT INTO users (username, password, plain_password, name, organization, role, is_active)
-VALUES (
-  'admin',
-  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-  'admin1234',
-  '관리자',
-  '개발팀',
-  'SUPERUSER',
-  true
-);
-
--- 축제 설정 초기값
-INSERT INTO festival_settings (id, is_active) VALUES (1, true);
-```
+계정 정보는 README 에 적지 않고 팀 내부 채널로만 공유한다.
 
 ### 5. Swagger UI
 
@@ -230,9 +214,9 @@ Docker 이미지를 `ghcr.io/ke-62/sejong_event_backend` 로 푸시한다.
 
 ### 초기 데이터
 
-신규 DB 는 최초 1회 `SPRING_JPA_HIBERNATE_DDL_AUTO=update` 로 테이블을 만든 뒤,
-아래 "로컬 실행 4. 초기 데이터 INSERT" 의 `admin` 계정·축제 설정을 넣고,
-이후에는 `validate` 로 되돌린다.
+신규 DB 는 최초 1회 `SPRING_JPA_HIBERNATE_DDL_AUTO=update` 로 테이블을 만들고,
+`SPRING_PROFILES_ACTIVE=prod,local` 로 띄워 `DataSeeder` 가 초기 계정·데이터를 넣게 한다.
+이후에는 `validate` 로 되돌린다. 계정 정보는 팀 내부 채널로만 공유한다.
 
 ## 브랜치 전략
 
